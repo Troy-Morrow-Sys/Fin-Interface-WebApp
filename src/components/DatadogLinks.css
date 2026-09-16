@@ -1,0 +1,14 @@
+.datadog-links-page { background: #ffffff; min-height: 100vh; padding: 24px; }
+.datadog-links-container { margin: 0 auto; max-width: 900px; }
+.datadog-back-button { background: #f0f5ff; border: 1px solid #dce8f5; border-radius: 4px; color: #0088D8; cursor: pointer; font-size: 14px; font-weight: 600; padding: 9px 16px; }
+.datadog-links-header { align-items: center; display: flex; gap: 18px; margin: 76px 0 34px; }
+.datadog-title-icon { align-items: center; background: #e8f0ff; border-radius: 10px; color: #0088D8; display: flex; font-size: 34px; height: 64px; justify-content: center; width: 64px; }
+.datadog-links-header h1 { color: #0088D8; font-size: 30px; margin: 0 0 8px; }
+.datadog-links-header p { color: #7c8985; font-size: 15px; margin: 0; }
+.dashboard-links { display: grid; gap: 16px; }
+.dashboard-link { align-items: center; background: #ffffff; border: 1px solid #e3ece8; border-left: 5px solid #4BB92C; border-radius: 8px; box-shadow: 0 5px 16px rgba(42, 68, 61, 0.07); color: inherit; display: grid; gap: 8px 18px; grid-template-columns: 72px 1fr auto; padding: 20px 22px; text-decoration: none; transition: box-shadow 180ms ease, transform 180ms ease; }
+.dashboard-link:hover { box-shadow: 0 9px 22px rgba(42, 68, 61, 0.13); transform: translateY(-2px); }
+.dashboard-business-unit { color: #4BB92C; font-size: 14px; font-weight: 800; }
+.dashboard-link-name { color: #193d70; font-size: 16px; font-weight: 700; }
+.dashboard-open { color: #0088D8; font-size: 22px; }
+@media (max-width: 600px) { .datadog-links-page { padding: 18px; } .datadog-links-header { align-items: flex-start; margin-top: 55px; } .datadog-links-header h1 { font-size: 25px; } .dashboard-link { grid-template-columns: 1fr auto; } .dashboard-business-unit { grid-column: 1 / -1; } }

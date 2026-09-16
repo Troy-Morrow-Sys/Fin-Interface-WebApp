@@ -1,0 +1,166 @@
+.records-table-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sequence-group {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sequence-group:last-child {
+  border-bottom: none;
+}
+
+.sequence-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s ease;
+  border-left: 4px solid #0088D8;
+  user-select: none;
+}
+
+.sequence-header:hover {
+  background-color: #f0f0f0;
+}
+
+.expand-icon {
+  color: #0088D8;
+  font-size: 12px;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  min-width: 12px;
+}
+
+.sequence-title {
+  color: #0088D8;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sequence-content {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.records-table thead {
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 2px solid #0088D8;
+}
+
+.records-table th {
+  padding: 12px 15px;
+  text-align: left;
+  color: #0088D8;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.records-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.records-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.records-table tbody td {
+  padding: 12px 15px;
+  color: #333;
+  font-size: 13px;
+}
+
+.flow-name {
+  font-weight: 500;
+  color: #0088D8;
+}
+
+.transaction-id {
+  font-family: 'Courier New', monospace;
+  color: #666;
+  word-break: break-all;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 12px;
+  min-width: 180px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.status-completed {
+  background-color: #c8e6c9;
+  color: #1b5e20;
+}
+
+.status-pending {
+  background-color: #fff9c4;
+  color: #f57f17;
+}
+
+.status-failed {
+  background-color: #ffcdd2;
+  color: #b71c1c;
+}
+
+.status-unknown {
+  background-color: #eeeeee;
+  color: #424242;
+}
+
+@media (max-width: 768px) {
+  .sequence-header {
+    padding: 12px;
+  }
+
+  .sequence-title {
+    font-size: 12px;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .timestamp {
+    min-width: auto;
+  }
+}
