@@ -395,8 +395,14 @@
   });
 
   app.addEventListener('change', function (event) {
-    if (event.target.id === 'businessUnit') loadOpcos(event.target.value);
-    if (event.target.id === 'opco') state.opco = event.target.value;
+    if (event.target.id === 'businessUnit') {
+      loadOpcos(event.target.value);
+      return;
+    }
+    if (event.target.id === 'opco') {
+      state.opco = event.target.value;
+      render();
+    }
   });
 
   app.addEventListener('input', function (event) {
