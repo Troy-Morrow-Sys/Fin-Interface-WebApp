@@ -1,17 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0088D8" />
-    <meta
-      name="description"
-      content="Financial Interface Service - Invoice Management System"
-    />
-    <title>Financial Interface Service</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#075c3b">
+    <meta name="description" content="Finance Integration Ops Portal">
+    <title>Finance Integration Ops Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+      window.APP_CONFIG = { apiBaseUrl: 'http://localhost:8080' };
+    </script>
+    <script src="app.js" defer></script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <main id="app" aria-live="polite"></main>
   </body>
 </html>

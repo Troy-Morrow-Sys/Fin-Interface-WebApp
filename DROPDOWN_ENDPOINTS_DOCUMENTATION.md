@@ -62,27 +62,6 @@ GET /invoice/businessUnit
   5. Make the dropdown interactive so users can select a value
   6. On Business Unit selection, trigger Endpoint 2 (Get Distinct Opco) to populate the Opco dropdown
 
-- **UI Code Example (React)**:
-  ```javascript
-  const [businessUnits, setBusinessUnits] = useState([]);
-  
-  useEffect(() => {
-    fetch('http://localhost:8080/invoice/businessUnit')
-      .then(response => response.json())
-      .then(data => setBusinessUnits(data))
-      .catch(error => console.error('Error fetching business units:', error));
-  }, []);
-  
-  return (
-    <select onChange={(e) => handleBusinessUnitChange(e.target.value)}>
-      <option value="">-- Select Business Unit --</option>
-      {businessUnits.map(bu => (
-        <option key={bu} value={bu}>{bu}</option>
-      ))}
-    </select>
-  );
-  ```
-
 - **UI Code Example (HTML/JavaScript)**:
   ```html
   <select id="businessUnitDropdown">
@@ -186,52 +165,6 @@ GET /invoice/opco?businessUnit=EU
   6. Add a default/placeholder option at the top: "-- Select Opco --"
   7. Enable the Opco dropdown for user interaction
   8. On Opco selection, the user can then click the Search button (Endpoint 1 from API_DOCUMENTATION.md)
-
-- **UI Code Example (React)**:
-  ```javascript
-  const [businessUnits, setBusinessUnits] = useState([]);
-  const [opcos, setOpcos] = useState([]);
-  const [selectedBU, setSelectedBU] = useState('');
-  
-  // Load business units on mount
-  useEffect(() => {
-    fetch('http://localhost:8080/invoice/businessUnit')
-      .then(response => response.json())
-      .then(data => setBusinessUnits(data))
-      .catch(error => console.error('Error fetching business units:', error));
-  }, []);
-  
-  // Load opcos when business unit changes
-  const handleBusinessUnitChange = (bu) => {
-    setSelectedBU(bu);
-    if (bu) {
-      fetch(`http://localhost:8080/invoice/opco?businessUnit=${bu}`)
-        .then(response => response.json())
-        .then(data => setOpcos(data))
-        .catch(error => console.error('Error fetching opcos:', error));
-    } else {
-      setOpcos([]);
-    }
-  };
-  
-  return (
-    <>
-      <select onChange={(e) => handleBusinessUnitChange(e.target.value)}>
-        <option value="">-- Select Business Unit --</option>
-        {businessUnits.map(bu => (
-          <option key={bu} value={bu}>{bu}</option>
-        ))}
-      </select>
-      
-      <select disabled={!selectedBU}>
-        <option value="">-- Select Opco --</option>
-        {opcos.map(opco => (
-          <option key={opco} value={opco}>{opco}</option>
-        ))}
-      </select>
-    </>
-  );
-  ```
 
 - **UI Code Example (HTML/JavaScript)**:
   ```html
