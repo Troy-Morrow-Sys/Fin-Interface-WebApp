@@ -52,6 +52,9 @@
     missingRecords: '',
     detailLoading: false,
     detailError: '',
+    retriggering: false,
+    retriggerMessage: '',
+    retriggerError: '',
     selectedSequence: null,
     healthResults: {}
   };
@@ -211,11 +214,17 @@
 
   function renderDetail() {
     const invoice = state.selectedInvoice || {};
+    const retriggerButton = '<div class="retrigger-actions" aria-label="Invoice retrigger action">' +
+      '<button type="button" class="retrigger-button" data-action="retrigger-invoice"' + (state.retriggering ? ' disabled' : '') + '>' +
+        (state.retriggering ? 'Submitting...' : 'Retrigger') + '</button>' +
+      '</div>' +
+      (state.retriggerMessage ? '<div class="retrigger-feedback" role="status">' + escapeHTML(state.retriggerMessage) + '</div>' : '') +
+      (state.retriggerError ? '<div class="retrigger-feedback error-message" role="alert">' + escapeHTML(state.retriggerError) + '</div>' : '');
     let body = '<div class="loading-state" role="status">Loading invoice details...</div>';
     if (!state.detailLoading && state.detailError) {
       body = '<div class="error-message" role="alert">' + escapeHTML(state.detailError) + '</div>';
     } else if (!state.detailLoading) {
-      body = (state.missingRecords ? renderStatusBar() : '') +
+      body = retriggerButton + (state.missingRecords ? renderStatusBar() : '') +
         '<section class="records-section"><h2>Transaction Records</h2>' + renderRecordsTable() + '</section>';
     }
     return '<section class="page-shell detail-view"><div class="page-container wide-container">' +
@@ -315,6 +324,9 @@
     state.healthResults = {};
     state.detailLoading = true;
     state.detailError = '';
+    state.retriggering = false;
+    state.retriggerMessage = '';
+    state.retriggerError = '';
     render();
     try {
       const invoiceKey = encodeURIComponent(invoice.invoiceKey);
@@ -331,6 +343,42 @@
       state.detailError = 'Failed to load invoice details. Please try again.';
     } finally {
       state.detailLoading = false;
+      if (state.view === 'detail') render();
+    }
+  }
+
+  async function retriggerInvoice() {
+    const invoiceNumber = state.selectedInvoice && state.selectedInvoice.invoiceNumber;
+    if (!invoiceNumber) {
+      state.retriggerError = 'The current invoice number is unavailable.';
+      state.retriggerMessage = '';
+      render();
+      return;
+    }
+
+    state.retriggering = true;
+    state.retriggerMessage = '';
+    state.retriggerError = '';
+    render();
+    try {
+      const params = 'invoiceNumber=' + encodeURIComponent(invoiceNumber);
+      const response = await fetch(API_BASE_URL + '/invoice/retrigger-invoice?' + params, {
+        method: 'POST'
+      });
+      if (!response.ok) {
+        throw new Error('Retrigger request failed with status ' + response.status + '.');
+      }
+      const data = await response.json();
+      const firstResult = Array.isArray(data.results) ? data.results[0] : null;
+      if (!firstResult || firstResult.status == null) {
+        throw new Error('Retrigger response did not include a status in its first result.');
+      }
+      state.retriggerMessage = String(firstResult.status);
+    } catch (error) {
+      console.error('Error submitting invoice retrigger request:', error);
+      state.retriggerError = error.message || 'Unable to submit retrigger request.';
+    } finally {
+      state.retriggering = false;
       if (state.view === 'detail') render();
     }
   }
@@ -391,6 +439,8 @@
       render();
     } else if (action === 'sequence-health') {
       checkSequenceHealth(Number(target.dataset.sequence));
+    } else if (action === 'retrigger-invoice') {
+      retriggerInvoice();
     }
   });
 

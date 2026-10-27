@@ -97,6 +97,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .detail-heading { margin: 4px 0 24px; }
 .invoice-info { display: flex; flex-wrap: wrap; gap: 7px 18px; margin-top: 12px !important; color: #61736a !important; }
 .invoice-info strong { color: #183b2f; }
+.retrigger-actions { display: flex; justify-content: flex-end; gap: 10px; margin: 0 0 14px; }
+.retrigger-button { min-height: 38px; padding: 8px 14px; color: #fff; background: var(--green); border: 0; border-radius: 4px; font-size: 13px; font-weight: 750; }
+.retrigger-button:hover:not(:disabled) { background: #06482f; }
+.retrigger-button:disabled { background: #aab8b0; cursor: not-allowed; }
+.retrigger-feedback { margin: 0 0 14px; text-align: right; font-size: 13px; }
+.retrigger-feedback.error-message { text-align: left; }
 .status-bar-container { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; margin-bottom: 30px; padding: 18px 20px; background: #fff; border: 1px solid #dce7df; border-radius: 5px; }
 .status-label { color: #294a3a; font-size: 13px; font-weight: 800; }
 .circles-container { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }

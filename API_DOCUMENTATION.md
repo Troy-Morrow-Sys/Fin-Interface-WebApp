@@ -262,6 +262,34 @@ GET /invoice/missing?invoiceKey=US001INV-2024-001
 
 ---
 
+## Endpoint 4: Retrigger Invoice
+
+### Mapping
+- **URL**: `POST /invoice/retrigger-invoice`
+- **Method**: POST
+- **Request Parameters**:
+  - `invoiceNumber` (String, required): Invoice number for the current invoice
+
+### Request Example
+```
+POST /invoice/retrigger-invoice?invoiceNumber=INV-2024-001
+```
+
+The Invoice Details page provides a **Retrigger** button that sends the current invoice number to this endpoint.
+On success, the page displays the `status` value from the first item in the response's `results` array. The response is expected to include a shape like:
+
+```json
+{
+  "results": [
+    {
+      "status": "SUCCESS"
+    }
+  ]
+}
+```
+
+---
+
 ## User Flow Diagram
 
 ```
@@ -326,4 +354,3 @@ GET /invoice/missing?invoiceKey=US001INV-2024-001
 3. Test edge cases: invoices with all sequences present vs. partially missing sequences
 4. Performance test with large result sets (100+ records)
 5. Test UI responsiveness when calling all 3 endpoints in rapid succession
-
