@@ -35,13 +35,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .eyebrow { display: block; margin-bottom: 10px; color: #55756a; font-size: 11px; font-weight: 800; letter-spacing: 1.2px; }
 .home-intro h2 { margin: 0 0 9px; color: #183b30; font-size: 30px; }
 .home-intro p, .page-heading p, .feature-heading p { margin: 0; color: var(--muted); font-size: 15px; }
-.application-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.application-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
 .application-card { position: relative; display: flex; min-height: 258px; flex-direction: column; align-items: flex-start; padding: 25px 24px 20px; text-align: left; color: inherit; background: rgba(255,255,255,.94); border: 1px solid #dfe9e2; border-radius: 7px; box-shadow: 0 8px 23px rgba(23,58,45,.07); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
 .application-card:hover { transform: translateY(-3px); border-color: #a8c5b3; box-shadow: var(--shadow); }
 .health-card { cursor: default; opacity: .64; }
 .health-card:hover { transform: none; box-shadow: 0 8px 23px rgba(23,58,45,.07); }
 .application-icon, .feature-icon { display: grid; width: 52px; height: 52px; place-items: center; margin-bottom: 20px; border-radius: 7px; font-size: 27px; }
 .invoice-icon { color: #318431; background: #e9f5e5; }
+.failed-invoices-icon { color: #922b25; background: #fbe4e1; font-weight: 850; }
 .datadog-icon { color: #16799a; background: #e5f2f5; }
 .health-icon { color: #55876e; background: #e6f2e9; }
 .application-name { color: #173a30; font-size: 17px; font-weight: 750; }
@@ -73,6 +74,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .results-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 22px; }
 .results-header .back-button { margin-bottom: 20px; }
 .results-count { margin-top: 8px !important; }
+.failed-invoice-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; max-width: 700px; margin-bottom: 20px; padding: 20px; background: #fff; border: 1px solid #dfe8e2; border-radius: 5px; }
+.failed-invoice-filters .form-group { margin: 0; }
 .invoice-search { max-width: 440px; margin-bottom: 20px; }
 .table-wrapper { width: 100%; overflow-x: auto; background: #fff; border: 1px solid #dfe8e2; border-radius: 5px; box-shadow: 0 5px 18px rgba(22,56,43,.05); }
 .results-table, .records-table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -168,6 +171,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .preview-heading { align-items: flex-start; flex-direction: column; }
   .dashboard-preview { align-items: flex-start; flex-direction: column; }
   .health-content { margin-top: 55px; }
+  .failed-invoice-filters { grid-template-columns: 1fr; gap: 12px; }
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+  .application-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 480px) {

@@ -47,6 +47,18 @@
     invoices: [],
     invoiceSearch: '',
     currentPage: 1,
+    failedRecords: [],
+    failedRecordsLoading: false,
+    failedRecordsRequest: 0,
+    failedRecordsError: '',
+    failedBusinessUnits: [],
+    failedOpcos: [],
+    failedBusinessUnit: '',
+    failedOpco: '',
+    failedBusinessUnitsLoading: false,
+    failedOpcosLoading: false,
+    failedOpcoRequest: 0,
+    failedFilterError: '',
     selectedInvoice: null,
     records: [],
     missingRecords: '',
@@ -90,6 +102,7 @@
     switch (state.view) {
       case 'invoiceSearch': app.innerHTML = renderInvoiceSearch(); break;
       case 'results': app.innerHTML = renderResults(); break;
+      case 'failedInvoices': app.innerHTML = renderFailedInvoices(); break;
       case 'detail': app.innerHTML = renderDetail(); break;
       case 'datadog': app.innerHTML = renderDatadog(); break;
       case 'healthCheck': app.innerHTML = renderHealthCheck(); break;
@@ -115,7 +128,13 @@
             '<span class="application-description">Search invoices by business unit and operating company, then review transaction details.</span>' +
             '<span class="application-action">Open Invoice Search <span aria-hidden="true">→</span></span>' +
           '</button>' +
-          '<button class="application-card datadog-card" data-action="open-datadog">' +
+            '<button class="application-card failed-invoices-card" data-action="open-failed-invoices">' +
+              '<span class="application-icon failed-invoices-icon" aria-hidden="true">!</span>' +
+              '<span class="application-name">Failed Invoices</span>' +
+              '<span class="application-description">Review failed invoice processing records and filter by business unit and operating company.</span>' +
+              '<span class="application-action">View Failed Invoices <span aria-hidden="true">→</span></span>' +
+            '</button>' +
+            '<button class="application-card datadog-card" data-action="open-datadog">' +
             '<span class="application-icon datadog-icon" aria-hidden="true">◌</span>' +
             '<span class="application-name">Datadog</span>' +
             '<span class="application-description">Monitor service performance and operational dashboards.</span>' +
@@ -180,6 +199,42 @@
         '<div class="table-wrapper"><table class="results-table"><thead><tr><th>Invoice Number</th><th>Business Unit</th><th>Operating Company</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
         (totalPages > 1 ? '<nav class="pagination" aria-label="Invoice results pages"><button data-action="previous-page"' + (state.currentPage === 1 ? ' disabled' : '') + '>Previous</button><span>Page ' + state.currentPage + ' of ' + totalPages + '</span><button data-action="next-page"' + (state.currentPage === totalPages ? ' disabled' : '') + '>Next</button></nav>' : '')) +
       '</div></section>';
+  }
+
+  function renderFailedInvoices() {
+    const businessUnitOptions = state.failedBusinessUnits.map(function (unit) {
+      return '<option value="' + escapeHTML(unit) + '"' + (unit === state.failedBusinessUnit ? ' selected' : '') + '>' + escapeHTML(unit) + '</option>';
+    }).join('');
+    const opcoOptions = state.failedOpcos.map(function (opco) {
+      return '<option value="' + escapeHTML(opco) + '"' + (opco === state.failedOpco ? ' selected' : '') + '>' + escapeHTML(opco) + '</option>';
+    }).join('');
+    const filteredRecords = state.failedRecords.filter(function (record) {
+      const invoiceKey = String(record.invoiceKey || '');
+      if (state.failedBusinessUnit && !invoiceKey.startsWith(state.failedBusinessUnit)) return false;
+      if (state.failedOpco && !invoiceKey.startsWith(state.failedBusinessUnit + state.failedOpco)) return false;
+      return true;
+    });
+    const rows = filteredRecords.map(function (record) {
+      let timestamp = record.transactionTimestamp || '';
+      const parsedDate = new Date(timestamp);
+      if (timestamp && !Number.isNaN(parsedDate.getTime())) timestamp = parsedDate.toLocaleString();
+      return '<tr><td class="transaction-id">' + escapeHTML(record.invoiceKey) + '</td><td class="flow-name">' + escapeHTML(record.flowName) + '</td><td class="timestamp">' + escapeHTML(timestamp) + '</td><td>' + escapeHTML(record.failureReason) + '</td></tr>';
+    }).join('');
+    let results = '<div class="loading-state" role="status">Loading failed invoices...</div>';
+    if (!state.failedRecordsLoading) {
+      results = filteredRecords.length === 0
+        ? '<div class="empty-state">No failed invoices found for the selected filters.</div>'
+        : '<div class="table-wrapper"><table class="results-table"><thead><tr><th>Invoice Key</th><th>Flow Name</th><th>Transaction Timestamp</th><th>Failure Reason</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    }
+
+    return '<section class="page-shell results-view"><div class="page-container wide-container">' +
+      '<header class="results-header"><button class="back-button" data-action="home">← Back to Home</button><div class="page-heading"><span class="eyebrow">INVOICE MANAGEMENT SYSTEM</span><h1>Failed Invoices</h1><p class="results-count">Showing ' + filteredRecords.length + ' of ' + state.failedRecords.length + ' failed record(s)</p></div></header>' +
+      (state.failedRecordsError ? '<div class="error-message" role="alert">' + escapeHTML(state.failedRecordsError) + '</div>' : '') +
+      (state.failedFilterError ? '<div class="error-message" role="alert">' + escapeHTML(state.failedFilterError) + '</div>' : '') +
+      '<div class="failed-invoice-filters">' +
+        '<div class="form-group"><label for="failedBusinessUnit">Business Unit</label><select id="failedBusinessUnit" class="field"' + (state.failedBusinessUnitsLoading ? ' disabled' : '') + '><option value="">' + (state.failedBusinessUnitsLoading ? 'Loading Business Units...' : 'All Business Units') + '</option>' + businessUnitOptions + '</select></div>' +
+        '<div class="form-group"><label for="failedOpco">Operating Company</label><select id="failedOpco" class="field"' + (!state.failedBusinessUnit || state.failedOpcosLoading ? ' disabled' : '') + '><option value="">' + (state.failedOpcosLoading ? 'Loading Opcos...' : 'All Opcos') + '</option>' + opcoOptions + '</select></div>' +
+      '</div>' + results + '</div></section>';
   }
 
   function renderStatusBar() {
@@ -287,6 +342,69 @@
       state.searchError = error.message || 'Unable to load OPCOs';
     }
     if (state.view === 'invoiceSearch') render();
+  }
+
+  async function loadFailedRecords() {
+    const requestId = ++state.failedRecordsRequest;
+    state.failedRecordsLoading = true;
+    state.failedRecordsError = '';
+    render();
+    try {
+      const response = await fetch(API_BASE_URL + '/invoice/failed-records');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed invoice request returned status ' + response.status + '.');
+      if (data.status !== 'SUCCESS') throw new Error(data.message || 'Failed invoice request was unsuccessful.');
+      if (!Array.isArray(data.failedRecords)) throw new Error('Failed invoice response did not include a list of records.');
+      if (requestId === state.failedRecordsRequest) state.failedRecords = data.failedRecords;
+    } catch (error) {
+      if (requestId === state.failedRecordsRequest) state.failedRecordsError = error.message || 'Unable to load failed invoices.';
+    } finally {
+      if (requestId === state.failedRecordsRequest) {
+        state.failedRecordsLoading = false;
+        if (state.view === 'failedInvoices') render();
+      }
+    }
+  }
+
+  async function loadFailedBusinessUnits() {
+    state.failedBusinessUnitsLoading = true;
+    state.failedFilterError = '';
+    render();
+    try {
+      const response = await fetch(API_BASE_URL + '/invoice/businessUnit');
+      if (!response.ok) throw new Error('Business unit request returned status ' + response.status + '.');
+      const data = await response.json();
+      if (!Array.isArray(data)) throw new Error('Business unit endpoint did not return a list.');
+      state.failedBusinessUnits = data;
+    } catch (error) {
+      state.failedFilterError = error.message || 'Unable to load business units.';
+    } finally {
+      state.failedBusinessUnitsLoading = false;
+      if (state.view === 'failedInvoices') render();
+    }
+  }
+
+  async function loadFailedOpcos(businessUnit) {
+    const requestId = ++state.failedOpcoRequest;
+    state.failedOpcosLoading = Boolean(businessUnit);
+    state.failedFilterError = '';
+    state.failedOpcos = [];
+    render();
+    if (!businessUnit) return;
+    try {
+      const response = await fetch(API_BASE_URL + '/invoice/opco?businessUnit=' + encodeURIComponent(businessUnit));
+      if (!response.ok) throw new Error('Opco request returned status ' + response.status + '.');
+      const data = await response.json();
+      if (!Array.isArray(data)) throw new Error('Opco endpoint did not return a list.');
+      if (requestId === state.failedOpcoRequest) state.failedOpcos = data;
+    } catch (error) {
+      if (requestId === state.failedOpcoRequest) state.failedFilterError = error.message || 'Unable to load Opcos.';
+    } finally {
+      if (requestId === state.failedOpcoRequest) {
+        state.failedOpcosLoading = false;
+        if (state.view === 'failedInvoices') render();
+      }
+    }
   }
 
   async function searchInvoices() {
@@ -413,6 +531,19 @@
       state.businessUnitsLoading = true;
       render();
       loadBusinessUnits();
+    } else if (action === 'open-failed-invoices') {
+      state.view = 'failedInvoices';
+      state.failedRecords = [];
+      state.failedRecordsError = '';
+      state.failedBusinessUnit = '';
+      state.failedOpco = '';
+      state.failedOpcos = [];
+      state.failedFilterError = '';
+      state.failedRecordsLoading = true;
+      state.failedBusinessUnitsLoading = true;
+      render();
+      loadFailedRecords();
+      loadFailedBusinessUnits();
     } else if (action === 'open-datadog') {
       state.view = 'datadog';
       render();
@@ -445,6 +576,17 @@
   });
 
   app.addEventListener('change', function (event) {
+    if (event.target.id === 'failedBusinessUnit') {
+      state.failedBusinessUnit = event.target.value;
+      state.failedOpco = '';
+      loadFailedOpcos(event.target.value);
+      return;
+    }
+    if (event.target.id === 'failedOpco') {
+      state.failedOpco = event.target.value;
+      render();
+      return;
+    }
     if (event.target.id === 'businessUnit') {
       loadOpcos(event.target.value);
       return;

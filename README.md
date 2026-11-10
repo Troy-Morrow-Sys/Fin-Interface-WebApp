@@ -10,9 +10,10 @@ The invoice API defaults to `http://localhost:8080`. Change `window.APP_CONFIG.a
 
 ## Features
 
-- Home screen for Invoice Search, Datadog dashboards, and the Health Check placeholder
+- Home screen for Invoice Search, Failed Invoices, Datadog dashboards, and the Health Check placeholder
 - Business Unit and dependent Operating Company selectors
 - Invoice search with number filtering and pagination
+- Failed invoice records with Business Unit and Operating Company filters
 - Invoice transaction details and five sequence status indicators
 - On-demand health checks for missing sequences
 - Select a Datadog dashboard and open it in a new tab
@@ -24,4 +25,4 @@ The invoice API defaults to `http://localhost:8080`. Change `window.APP_CONFIG.a
 - `public/styles.css`: responsive styling
 - `public/images/sysco-logo.png`: portal logo
 
-Each dashboard URL is configured in `public/app.js`; selecting a dashboard updates the **Open in new tab** link. Backend endpoint contracts are documented in `API_DOCUMENTATION.md`, `DROPDOWN_ENDPOINTS_DOCUMENTATION.md`, and `HEALTH_ENDPOINT_DOCUMENTATION.md`.
+Each dashboard URL is configured in `public/app.js`; selecting a dashboard updates the **Open in new tab** link. Backend endpoint contracts are documented in `API_DOCUMENTATION.md`, `DROPDOWN_ENDPOINTS_DOCUMENTATION.md`, `GET_FAILED_RECORDS_ENDPOINT_DOCUMENTATION.md`, and `HEALTH_ENDPOINT_DOCUMENTATION.md`.
